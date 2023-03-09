@@ -1,46 +1,55 @@
 #!/usr/bin/python3
-""" prime game """
+""" Prime Game Algorithm Python """
 
 
-def isPrime(x):
-    """ checks if a number is prime """
-    for i in range(2, x):
-        if x % i == 0:
+def is_prime(n):
+    """ Checks if a number given n is a prime number """
+    for i in range(2, int(n ** 0.5) + 1):
+        if not n % i:
             return False
     return True
 
 
-def isWinner(x, nums):
-    """ prime game """
-    if x < 1 or not nums or nums == []:
-        return None
-    r = min(x, len(nums))
-    Maria = 0
-    Ben = 0
-    player = 0
-    for r_i in range(r):
-        if nums[r_i] < 2:
-            Ben += 1
-        elif nums[r_i] == 2:
-            Maria += 1
-        else:
-            player = True
-            prime_exist = 1
-            n = list(range(2, nums[r_i] + 1))
-            while (prime_exist):
-                prime_exist = 0
-                for i in n:
-                    if (isPrime(i)):
-                        prime_exist = 1
-                        player = not player
-                        n = list(filter(lambda x: x % i != 0, n))
-            if (player):
-                Ben += 1
+def calculate_primes(n, primes):
+    """ Calculate all primes """
+    top_prime = primes[-1]
+    if n > top_prime:
+        for i in range(top_prime + 1, n + 1):
+            if is_prime(i):
+                primes.append(i)
             else:
-                Maria += 1
+                primes.append(0)
 
-    if Maria > Ben:
-        return 'Maria'
-    elif Ben > Maria:
-        return 'Ben'
+
+def isWinner(x, nums):
+    """
+    x is the number of rounds and nums is an array of n
+    Return: name of the player that won the most rounds
+    If the winner cannot be determined, return None
+    You can assume n and x will not be larger than 10000
+    """
+
+    players_wins = {"Maria": 0, "Ben": 0}
+
+    primes = [0, 0, 2]
+
+    calculate_primes(max(nums), primes)
+
+    for round in range(x):
+        sum_options = sum((i != 0 and i <= nums[round])
+                          for i in primes[:nums[round] + 1])
+
+        if (sum_options % 2):
+            winner = "Maria"
+        else:
+            winner = "Ben"
+
+        if winner:
+            players_wins[winner] += 1
+
+    if players_wins["Maria"] > players_wins["Ben"]:
+        return "Maria"
+    elif players_wins["Ben"] > players_wins["Maria"]:
+        return "Ben"
+
     return None
